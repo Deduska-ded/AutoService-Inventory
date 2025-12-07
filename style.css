@@ -1,4 +1,4 @@
-/* Pamatmuzika visam lapam */
+/* Pamata stils visai lapai */
 body {
     font-family: 'Segoe UI', system-ui, sans-serif;
     margin: 0;
@@ -60,6 +60,18 @@ button:hover {
     background: #1565c0;
 }
 
+/* Kopsavilkums */
+.summary {
+    text-align: center;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.summary p {
+    font-size: 14px;
+    color: #333;
+}
+
 /* Tabula */
 table {
     width: 90%;
@@ -80,6 +92,16 @@ th {
     letter-spacing: 0.05em;
 }
 
+/* Sortējami virsraksti */
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+th.sortable:hover {
+    background: #d4d8dd;
+}
+
 td {
     padding: 10px 12px;
     border-top: 1px solid #ddd;
@@ -89,6 +111,12 @@ td {
 /* Kārtas pārmaiņas rindām */
 tbody tr:nth-child(even) {
     background: #f9fafb;
+}
+
+/* Zema atlikuma rindas (qty < 3) */
+.low-stock {
+    background: #ffebee !important;
+    color: #b71c1c;
 }
 
 /* Pogas tabulā */
@@ -182,6 +210,10 @@ td button[style*="d32f2f"]:hover {
     }
 
     .controls > * {
+        width: 100%;
+    }
+}
+
         width: 100%;
     }
 }
