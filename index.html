@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Servisa Noliktava</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>🚗 Auto Servisa Noliktavas Sistēma</h1>
+        <p>Pārvaldi detaļas, instrumentus un materiālus ātri un ērti</p>
+    </header>
+
+    <section class="controls">
+        <input id="searchInput" type="text" placeholder="🔍 Meklēt pēc nosaukuma vai koda">
+        
+        <select id="categoryFilter">
+            <option value="all">Visas kategorijas</option>
+            <option value="detalas">Detaļas</option>
+            <option value="materiali">Materiāli</option>
+            <option value="instrumenti">Instrumenti</option>
+        </select>
+
+        <button id="addBtn">+ Pievienot jaunu</button>
+    </section>
+
+    <section>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nosaukums</th>
+                    <th>Kods</th>
+                    <th>Kategorija</th>
+                    <th>Daudzums</th>
+                    <th>Darbības</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Modal pievienošanai -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Pievienot jaunu produktu</h2>
+
+            <input id="newName" type="text" placeholder="Nosaukums">
+            <input id="newCode" type="text" placeholder="Kods">
+            <select id="newCategory">
+                <option value="detalas">Detaļas</option>
+                <option value="materiali">Materiāli</option>
+                <option value="instrumenti">Instrumenti</option>
+            </select>
+            <input id="newQty" type="number" placeholder="Daudzums" min="0">
+
+            <div class="modal-buttons">
+                <button id="saveBtn">Saglabāt</button>
+                <button id="closeBtn" class="cancel">Atcelt</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
