@@ -15,7 +15,6 @@
 </header>
 
 <section class="controls">
-    
     <!-- Meklētājs -->
     <input id="searchInput" type="text" placeholder="🔍 Meklēt pēc nosaukuma vai koda">
 
@@ -33,14 +32,19 @@
     <button id="addBtn">+ Pievienot jaunu</button>
 </section>
 
+<!-- Kopsavilkums -->
+<section class="summary">
+    <p id="summaryText">Ielādē datus...</p>
+</section>
+
 <section>
     <table>
         <thead>
             <tr>
-                <th>Nosaukums</th>
-                <th>Kods</th>
-                <th>Kategorija</th>
-                <th>Daudzums</th>
+                <th class="sortable" data-sort="name">Nosaukums</th>
+                <th class="sortable" data-sort="code">Kods</th>
+                <th class="sortable" data-sort="category">Kategorija</th>
+                <th class="sortable" data-sort="qty">Daudzums</th>
                 <th>Darbības</th>
             </tr>
         </thead>
