@@ -1,5 +1,7 @@
-// Sākotnējie dati noliktavai
-let data = [
+const STORAGE_KEY = "autoServiceInventory";
+
+// Noklusētie dati (ja nav saglabāti localStorage)
+let defaultData = [
     // Detaļas
     { name: "Eļļas filtrs", code: "OL-221", category: "detalas", qty: 12 },
     { name: "Bremžu disks (priekšējais)", code: "BR-FR-102", category: "detalas", qty: 4 },
@@ -35,6 +37,9 @@ let data = [
     { name: "Stiklu šķidrums vasarai", code: "WS-SUM-4L", category: "skidr", qty: 8 }
 ];
 
+// Dati, ar kuriem strādājam (tiks ielādēti no localStorage vai default)
+let data = [];
+
 // Lasāmie nosaukumi kategorijām
 const categoryNames = {
     detalas: "Detaļas",
@@ -47,13 +52,41 @@ const categoryNames = {
 const tableBody = document.getElementById("tableBody");
 const searchInput = document.getElementById("searchInput");
 const categoryFilter = document.getElementById("categoryFilter");
+const summaryText = document.getElementById("summaryText");
 
 const modal = document.getElementById("modal");
 const addBtn = document.getElementById("addBtn");
 const closeBtn = document.getElementById("closeBtn");
 const saveBtn = document.getElementById("saveBtn");
 
-// Tabulas renderēšana ar filtriem
+// Sortēšanas stāvoklis
+let sortColumn = null;   // "name" | "code" | "category" | "qty"
+let sortDirection = "asc"; // "asc" vai "desc"
+
+// Ielādēt datus no localStorage
+function loadFromStorage() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+        try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+                data = parsed;
+                return;
+            }
+        } catch (e) {
+            console.warn("Neizdevās nolasīt datus no localStorage:", e);
+        }
+    }
+    // Ja nav saglabātu datu – izmanto noklusētos
+    data = structuredClone ? structuredClone(defaultData) : JSON.parse(JSON.stringify(defaultData));
+}
+
+// Saglabāt datus localStorage
+function saveToStorage() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// Tabulas renderēšana ar filtriem un sortēšanu
 function renderTable() {
     tableBody.innerHTML = "";
 
@@ -67,11 +100,30 @@ function renderTable() {
         );
     });
 
+    // Sortēšana
+    if (sortColumn) {
+        filtered.sort((a, b) => {
+            let valA, valB;
+            if (sortColumn === "qty") {
+                valA = a.qty;
+                valB = b.qty;
+            } else {
+                valA = (a[sortColumn] || "").toString().toLowerCase();
+                valB = (b[sortColumn] || "").toString().toLowerCase();
+            }
+
+            if (valA < valB) return sortDirection === "asc" ? -1 : 1;
+            if (valA > valB) return sortDirection === "asc" ? 1 : -1;
+            return 0;
+        });
+    }
+
+    // Rindas izveide
     filtered.forEach(item => {
         const originalIndex = data.indexOf(item); // lai +1/-1 strādātu ar pareizo ierakstu
 
         let row = `
-            <tr>
+            <tr class="${item.qty < 3 ? "low-stock" : ""}">
                 <td>${item.name}</td>
                 <td>${item.code}</td>
                 <td>${categoryNames[item.category] || item.category}</td>
@@ -85,11 +137,17 @@ function renderTable() {
         `;
         tableBody.innerHTML += row;
     });
+
+    // Kopsavilkums
+    const totalItems = data.length;
+    const totalQty = data.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    summaryText.textContent = `Kopā pozīcijas: ${totalItems}, kopējais daudzums: ${totalQty}.`;
 }
 
 // Daudzuma palielināšana
 function increase(i) {
     data[i].qty++;
+    saveToStorage();
     renderTable();
 }
 
@@ -97,6 +155,7 @@ function increase(i) {
 function decrease(i) {
     if (data[i].qty > 0) {
         data[i].qty--;
+        saveToStorage();
         renderTable();
     }
 }
@@ -105,6 +164,7 @@ function decrease(i) {
 function removeItem(i) {
     if (confirm("Vai tiešām dzēst šo ierakstu?")) {
         data.splice(i, 1);
+        saveToStorage();
         renderTable();
     }
 }
@@ -128,6 +188,7 @@ saveBtn.onclick = () => {
     }
 
     data.push(item);
+    saveToStorage();
 
     // Notīrīt laukus
     document.getElementById("newName").value = "";
@@ -142,5 +203,20 @@ saveBtn.onclick = () => {
 searchInput.oninput = renderTable;
 categoryFilter.onchange = renderTable;
 
-// Pirmreizējā tabulas ielāde
+// Sortēšana, klikšķinot uz tabulas virsrakstiem
+document.querySelectorAll("th.sortable").forEach(th => {
+    th.addEventListener("click", () => {
+        const column = th.dataset.sort;
+        if (sortColumn === column) {
+            sortDirection = sortDirection === "asc" ? "desc" : "asc";
+        } else {
+            sortColumn = column;
+            sortDirection = "asc";
+        }
+        renderTable();
+    });
+});
+
+// Sākumā ielādējam datus un zīmējam tabulu
+loadFromStorage();
 renderTable();
